@@ -1,17 +1,24 @@
 # =====================================================================
 # 🛡️ 仁亚东的 data-science-labs 工业级完全体拦截账本 (2026最终版)
 # =====================================================================
-data/
+# 数据目录
+data/raw/*
+data/processed/*
+
+outputs/*
+!outputs/.gitkeep
+
+# 保留目录结构
+!data/raw/.gitkeep
+!data/processed/.gitkeep
 __pycache__/
 .DS_Store
 
 # 1. 隔离重量级数据源与本地数据库
 raw_data/
-*.csv
+
 *.sqlite
 *.db
-*.xlsx
-*.json
 *.parquet
 
 # 2. 屏蔽 Jupyter 和 Python 底层自动缓存与测试缓存
