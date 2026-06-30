@@ -14,7 +14,8 @@ def detect_encoding(path):
         raw_data = f.read()
         result = chardet.detect(raw_data)
 
-    return print(f"文件编码推测:{result}")
+    print(f"文件编码推测:{result}")
+    return result
 
 
 # ===================================================
