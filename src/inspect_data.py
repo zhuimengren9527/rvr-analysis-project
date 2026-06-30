@@ -1,6 +1,20 @@
 from datetime import datetime
 from pathlib import Path
-import pandas as pd
+import chardet
+
+
+# ===================================================
+# 文件编码检测
+# ===================================================
+
+def detect_encoding(path):
+
+    with open(path,'rb') as f:
+
+        raw_data = f.read()
+        result = chardet.detect(raw_data)
+
+    return print(f"文件编码推测:{result}")
 
 
 # ===================================================
@@ -44,7 +58,7 @@ def preview_file(path):
         for i in range(10):
             line = f.readline()
             lines.append(line)
-            print(repr(line))
+            print(f"第{i+1}行:{repr(line)}")
     return lines
 
 
@@ -56,13 +70,50 @@ def detect_separator(lines):
     sample_text = "".join(lines)
 
     if '\t' in sample_text:
-        print("\n检测到分隔符：Tab (\\t)")
+        print("检测到Tab \\t")
+        return '\t'
+
     elif ',' in sample_text:
-        print("\n检测到分隔符：,")
+        print("检测到逗号")
+        return ','
+
     elif ';' in sample_text:
-        print("\n检测到分号：;")
+        print("检测到分号")
+        return ';'
+
     elif ' ' in sample_text:
-        print("\n检测到空格：空格")
+        print("检测到空格")
+        return ' '
+
+    print("未识别到常见分隔符")
+    return None
+
+
+# =============================================================
+# 检测列名所在的行是第几行
+# =============================================================
+def detect_header_line(lines):
+    print("列名所在行：")
+
+    for index,line in enumerate(lines,start=1):
+        if 'CREATEDATE' in line and 'SITE' in line:
+            print(f"第{index}行")
+            return index
+    print('未识别到列名行')
+    return None
+
+
+# =============================================================
+# 提取列名
+# =============================================================
+def extract_columns(lines, separator, header_index):
+    if separator is None or header_index is None:
+        print("无法提取列名")
+        return None
+
+    column_names = lines[header_index - 1].strip().split(separator)
+    print(f"该文件的列名为: {column_names}")
+    return column_names
 
 
 # ===========================================================
@@ -76,10 +127,15 @@ def inspect_data(file_path):
     if not path.exists():
         print("文件不存在")
         return
-
-    # 调用各函数工具
+# ===========================================================
+# # 调用各函数工具
+# =========================================================== 
+    
     get_file_info(path)
     lines = preview_file(path)
-    detect_separator(lines)
+    detect_encoding(path)
+    separator = detect_separator(lines)
+    header_index = detect_header_line(lines)
+    extract_columns(lines,separator,header_index)
 
 
